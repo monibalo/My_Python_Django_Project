@@ -1,0 +1,287 @@
+{% extends 'base.html' %}
+
+{% block styles %}
+<style>
+    /* CSS styles here */
+    body, html {
+        height: 100%;
+    }
+
+    .messages-box {
+        flex: 1;
+        overflow-y: auto;
+    }
+
+    img {
+        height: 60px;
+        width: 80px;
+    }
+
+    /* Other styles ... */
+
+    p {
+        font-size: 12px; 
+    }
+
+    h2 {
+        font-size: 18px; 
+        color: rgb(29, 175, 243);
+
+    }
+
+    ul {
+            list-style: none;      
+    }
+
+    .nav-item-welcome {
+        list-style: none;
+        font-size: 14px;
+    }
+
+    .nav-link {
+        font-size: 12px; 
+        color: red;
+    }
+
+    b {
+        font-size: 16px; 
+        color: red;
+    }
+
+.message-text {
+        padding: 5px;
+        border-radius: 2px;
+        font-size: 12px;
+        
+    }
+
+.messages-list {
+        padding-left: 0;
+    }
+
+
+    .message-input {
+    flex: 1;
+    border-radius: 0;
+    border-right: none;
+    font-size: 12px;
+    }
+
+    .sent {
+        background-color: rgb(247, 210, 210);
+        align-self: flex-end;
+    }
+
+    .received {
+        background-color: #bff3cc; 
+        align-self: flex-start;
+    }
+
+
+
+</style>
+{% endblock %}
+
+
+{% load static %}
+
+{% block content %}
+<div class="chat-container">
+    <!-- Header Menu -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container">
+            <!-- <img src="images/monny_ai_logo.PNG" alt="AI Logo"> -->
+            <a href="{% url 'index' %}">
+            <img src="{% static 'images/monny_ai_logo.PNG' %} ">
+            </a>
+
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+                    aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            {% if user.is_authenticated %}
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item-welcome">
+                        <b>Welcome, {{ user.username }}</b>
+                        <a class="nav-link" style="color: red;" href="{% url 'index' %}">Logout</a>
+                    </li>
+
+                </ul>
+            </div>
+            {% else %}
+            <ul class="navbar-nav ml-auto">
+
+                <li class="nav-item">
+                    <a class="nav-link" style="color: red;" href="{% url 'index' %}">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" style="color: red;" href="{% url 'register' %}">Register</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" style="color: red;" href="{% url 'login' %}">Login</a>
+                </li>
+            </ul>
+            {% endif %}
+        </div>
+    </nav>
+
+    <!-- Two-Column Content -->
+    <div class="container mt-4">
+        <div class="row">
+            <!-- Left Column -->
+            <div class="col-md-6">
+                <h1>Welcome to Monny Balogun AI Chatbot App</h1>
+
+                <br>
+
+
+                <h2><a class="nav-link" style="color: red;" href="{% url 'main' %}">Main</a>Speech to Text</h2>
+                <p>Speech to text goes in here:</p>
+<!-- 
+                <ul>               
+                    <li> <a href="{% url 'excel' %}">MS Excel</a></li>
+                    <li> <a href="{% url 'hr' %}">Human Resources</a></li>
+                    <li> <a href="{% url 'infotech' %}">Introduction to Infotech</a></li>
+                    <li> <a href="{% url 'video' %}">Training Video</a></li>
+                </ul> -->
+            </div>
+
+            <!-- Right Column with Form -->
+            <div class="col-md-6">
+                
+                <div class="card-body message-box">
+                 <ul class="list-unstyled messages-list">
+                    <h2>ChatBot</h2>
+                    {% for chat in chats %}
+                        {% if chat.user == request.user %}
+                        <li class="message sent">
+                            <div class="message-text">
+                                <div class="message-sender">
+                                    <b>You</b>
+                                </div>
+                                <div class="message-content">
+                                    {{ chat.message }}
+                                </div>
+                            </div>
+                        </li>
+                        <li class="message received">
+                            <div class="message-text">
+                                <div class="message-sender">
+                                    <b>AI Chatbot</b>
+                                </div>
+                                <div class="message-content">
+                                    {{ chat.response }}
+                                </div>
+                            </div>
+                        </li>
+                        {% endif %}
+                    {% endfor %}
+                </ul>
+            </div>
+
+                <form class="message-form">
+                    {% csrf_token %}
+                    <div class="input-group">
+                        <input type="text" class="form-control message-input" placeholder="Type your message here">
+                        <div class="input-group-append">
+                            <button type="submit" class="btn btn-primary btn-send">Send</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer Menu -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container">
+            <ul class="navbar-nav mx-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Privacy Policy</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Terms of Service</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Sitemap</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+</div>
+
+
+<script>
+  const messagesList = document.querySelector('.messages-list');
+  const messageForm = document.querySelector('.message-form');
+  const messageInput = document.querySelector('.message-input');
+
+  messageForm.addEventListener('submit', (event) => {
+      event.preventDefault();
+  
+  const message = messageInput.value.trim();
+  if (message.length === 0) {
+      return;  
+  }
+
+  const messageItem = document.createElement('li');
+  messageItem.classList.add('message', 'sent');
+  messageItem.innerHTML = `
+      <div class="message-text">
+          <div class="message-sender">
+              <b>You</b>
+          </div>
+          <div class="message-content">
+              ${message}
+          </div>
+      </div>`;
+  messagesList.appendChild(messageItem);
+  
+  messageInput.value ='';
+
+  fetch('', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams({
+          'csrfmiddlewaretoken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+          'message': message
+      })
+  })
+
+  // This code is executed after a successful POST request to the server
+  // The response from the server is assumed to be in JSON format
+
+  // Parse the response as JSON
+  .then(response => response.json())
+
+  // Handle the parsed JSON data
+  .then(data => {
+      // Extract the 'response' property from the JSON data
+      const response = data.response;
+      
+      // Create a new <li> element for the chat message
+      const messageItem = document.createElement('li');
+      messageItem.classList.add('message', 'received');
+      
+      // Populate the HTML structure for the chat message
+      messageItem.innerHTML = `
+          <div class="message-text">
+              <div class="message-sender">
+                  <b>AI Chatbot</b>
+              </div>
+              <div class="message-content">
+                  ${response}
+              </div>
+          </div>`;
+      
+      // Append the newly created message element to the chat message list
+      messagesList.appendChild(messageItem);
+  });
+
+
+});
+
+</script>
+
+{% endblock %}

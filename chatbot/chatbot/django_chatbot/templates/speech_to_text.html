@@ -1,0 +1,5 @@
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <input type="file" name="audio_file" accept=".wav, .mp3, .ogg">
+    <button type="submit">Convert</button>
+</form>

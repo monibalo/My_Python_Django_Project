@@ -1,0 +1,26 @@
+<div class="col-lg-10 col-lg-offset-2">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <!-- <h3 class="panel-title">Available Questionnaire</h3> -->
+        </div>
+
+        <ul class="list-group">
+            {% for poll in polls %}
+                <li class="list-group-item">
+                    <strong>{{ poll.question }}</strong>
+                    <p>{{ poll.description }}</p>
+
+                    <ul>
+                        {% for option in poll.options.all %}
+                            <li>{{ option.text }}</li>
+                        {% endfor %}
+                    </ul>
+                    <span class="pull-right">
+                        <a href="{% url 'pollvote' poll.id %}" class="btn btn-info btn-xs">Option</a>
+                        <!-- <a href="{% url 'pollresult' poll.id %}" class="btn btn-default btn-xs">View Results</a> -->
+                    </span>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
